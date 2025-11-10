@@ -1,8 +1,12 @@
 # 🎮 Texas Hold'em
 
+<img width="901" height="636" alt="image" src="https://github.com/Alejandro-Mendieta/TEXAS-HOLD-EM/blob/main/ASSETS/FOTOS/FOTO.png?raw=true" />
+
+![Estado](https://img.shields.io/badge/Estado-En%20Proceso-brightgreen?style=for-the-badge&logo=rocket)
 ![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![Pygame](https://img.shields.io/badge/Pygame-2.5+-green.svg)
 ![License](https://img.shields.io/badge/Licencia-MIT-yellow.svg)
+![Version](https://img.shields.io/badge/Version-1.0-cyan)
 
 Un juego de Poker Texas Hold'em completamente funcional con interfaz moderna, efectos visuales avanzados e inteligencia artificial mejorada. Desarrollado en Python con Pygame.
 
