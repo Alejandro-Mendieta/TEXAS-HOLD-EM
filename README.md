@@ -1,199 +1,350 @@
-# 🎮 Texas Hold'em
+# 🎮 Texas Hold'em - Edición Premium Oro
 
 <img width="901" height="636" alt="image" src="https://github.com/Alejandro-Mendieta/TEXAS-HOLD-EM/blob/main/ASSETS/FOTOS/FOTO.png?raw=true" />
+<img width="901" height="636" alt="image" src="https://github.com/Alejandro-Mendieta/TEXAS-HOLD-EM/blob/main/ASSETS/FOTOS/FOTO1.png?raw=true" />
 
-![Estado](https://img.shields.io/badge/Estado-En%20Proceso-brightgreen?style=for-the-badge&logo=rocket)
-![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)
-![Pygame](https://img.shields.io/badge/Pygame-2.5+-green.svg)
-![License](https://img.shields.io/badge/Licencia-MIT-yellow.svg)
-![Version](https://img.shields.io/badge/Version-1.0-cyan)
+![Estado](https://img.shields.io/badge/Estado-Completado%20✅-brightgreen?style=for-the-badge&logo=rocket)
+![Python](https://img.shields.io/badge/Python-3.8+-blue.svg?style=for-the-badge&logo=python)
+![Pygame](https://img.shields.io/badge/Pygame-2.5+-green.svg?style=for-the-badge)
+![License](https://img.shields.io/badge/Licencia-MIT-yellow.svg?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.0%20Premium-cyan?style=for-the-badge)
+![Multiplayer](https://img.shields.io/badge/Multijugador-4%20Jugadores-orange?style=for-the-badge)
 
-Un juego de Poker Texas Hold'em completamente funcional con interfaz moderna, efectos visuales avanzados e inteligencia artificial mejorada. Desarrollado en Python con Pygame.
+Un juego de Poker Texas Hold'em premium con diseño de lujo en oro y negro, sistema de login completo e inteligencia artificial avanzada. Desarrollado en Python con Pygame.
 
-## ✨ Características Principales
+## ✨ Características Premium
 
-### 🎯 Jugabilidad
-- **Texas Hold'em completo** con todas las rondas: Pre-flop, Flop, Turn y River
-- **Sistema de apuestas** realista con blinds, calls, raises y all-ins
+### 🎯 Jugabilidad Mejorada
+- **Texas Hold'em completo** con todas las rondas: Pre-flop, Flop, Turn, River y Showdown
+- **Sistema de apuestas avanzado** con blinds automáticos, calls, raises y all-ins
 - **Evaluación automática** de manos según las reglas oficiales del poker
-- **Múltiples jugadores IA** con diferentes personalidades
+- **4 jugadores** (1 humano + 3 IA) con personalidades únicas
+- **Sistema de dealer** rotativo y blinds progresivos
 
-### 🎨 Interfaz Visual
-- **Temas intercambiables** (Clásico, Nocturno, Lujo)
-- **Efectos de partículas** para victorias, apuestas y transiciones
-- **Animaciones suaves** para cartas y fichas
-- **Texto con efectos** de brillo y resplandor
-- **Mesa ovalada** con diseño profesional de casino
+### 🔐 Sistema de Usuarios
+- **Registro y login** seguro con base de datos JSON
+- **Perfiles persistentes** con estadísticas individuales
+- **Sistema de fichas** que se mantiene entre sesiones
+- **Historial de partidas** y progreso guardado automáticamente
 
-### 🤖 Inteligencia Artificial
+### 🎨 Interfaz de Lujo
+- **Tema Premium Oro y Negro** con diseño de casino exclusivo
+- **Efectos de partículas** doradas para victorias y acciones
+- **Cartas premium** con detalles dorados y plateados
+- **Animaciones fluidas** y transiciones suaves
+- **Mesa ovalada** con patrones geométricos dorados
+- **Tipografía elegante** con fuentes premium
+
+### 🤖 Inteligencia Artificial Avanzada
 - **Tres personalidades distintas**:
-  - **Agresiva**: Apuesta frecuentemente y toma riesgos
-  - **Conservadora**: Juego seguro y calculado
-  - **Impredecible**: Comportamiento variable y sorpresivo
-- **Tiempo de decisión** realista que simula pensamiento humano
-- **Evaluación de fuerza** de mano adaptativa por ronda
-
-### 💾 Sistema de Progreso
-- **Estadísticas persistentes** (partidas jugadas, ganadas, mejores manos)
-- **Guardado automático** de progreso
-- **Récords personales** y historial de juego
-- **Sistema de puntuación** detallado
+  - **🤝 Ana (Agresiva)**: Apuesta frecuentemente y toma riesgos calculados
+  - **🛡️ Luis (Conservador)**: Juego seguro y estratégico
+  - **🎭 Mia (Impredecible)**: Comportamiento variable y sorpresivo
+- **Toma de decisiones** basada en fuerza de mano y contexto de juego
+- **Tiempos de reacción** realistas que simulan pensamiento humano
 
 ## 🚀 Instalación y Ejecución
 
 ### Requisitos del Sistema
 - **Python 3.8** o superior
-- **Pygame 2.5** o superior
+- **Pygame 2.5.2** o superior
 - **Sistema operativo**: Windows, Linux o macOS
 
-### Instalación de Dependencias
+### Instalación Rápida
 
 ```bash
+# Clonar el repositorio (si está en GitHub)
+git clone https://github.com/Alejandro-Mendieta/TEXAS-HOLD-EM.git
+cd TEXAS-HOLD-EM
+
 # Instalar Pygame
 pip install pygame
 
-# O instalar desde requirements.txt
-pip install -r requirements.txt
+# Ejecutar el juego
+python POKER.py
 ```
 
-### Ejecutar el Juego
+### Verificación de Instalación
 
 ```bash
-# Ejecutar directamente
-python POKER.py
+# Verificar versión de Python
+python --version
 
-# O si está en un entorno virtual
-python3 POKER.py
+# Verificar instalación de Pygame
+python -c "import pygame; print(pygame.version.ver)"
 ```
 
 ## 🎮 Controles del Juego
 
 ### Durante el Juego
-- **Fold**: Retirarse de la mano actual
-- **Call**: Igualar la apuesta actual
-- **Raise**: Aumentar la apuesta
-- **All-in**: Apostar todas las fichas disponibles
-- **ESC**: Volver al menú principal
+- **FOLD** 🚫: Retirarse de la mano actual
+- **CALL** ✅: Igualar la apuesta actual
+- **RAISE** ⬆️: Aumentar la apuesta
+- **ALL-IN** 🎯: Apostar todas las fichas disponibles
+- **ESC** ↩️: Volver al menú principal
 
-### Navegación
-- **Clic izquierdo**: Seleccionar opciones y botones
-- **ESC**: Salir del juego o volver atrás
+### Navegación General
+- **Clic izquierdo** 🖱️: Seleccionar opciones y botones
+- **TAB** ↹: Cambiar entre campos en el login
+- **ENTER** ⏎: Confirmar en formularios
+- **ESC** 🚪: Salir del juego o volver atrás
 
 ## 🃏 Reglas del Texas Hold'em
 
 ### Desarrollo de la Partida
-1. **Pre-flop**: Cada jugador recibe 2 cartas privadas
-2. **Flop**: Se revelan 3 cartas comunitarias
-3. **Turn**: Se revela la 4ª carta comunitaria
-4. **River**: Se revela la 5ª carta comunitaria
-5. **Showdown**: Los jugadores muestran sus manos
+1. **PRE-FLOP** 📦: Cada jugador recibe 2 cartas privadas
+2. **FLOP** 🌊: Se revelan 3 cartas comunitarias
+3. **TURN** 🔄: Se revela la 4ª carta comunitaria  
+4. **RIVER** 🏞️: Se revela la 5ª carta comunitaria
+5. **SHOWDOWN** 🃏: Los jugadores muestran sus manos
+
+### Sistema de Apuestas
+- **Small Blind**: 50% de la apuesta mínima
+- **Big Blind**: Apuesta mínima completa
+- **Ronda de apuestas** después de cada revelación de cartas
+- **All-in**: Cuando un jugador apuesta todas sus fichas
 
 ### Jerarquía de Manos
-1. **Escalera Real** (A-K-Q-J-10 del mismo palo)
-2. **Escalera de Color** (5 cartas consecutivas del mismo palo)
-3. **Póker** (4 cartas del mismo valor)
-4. **Full House** (trío + par)
-5. **Color** (5 cartas del mismo palo)
-6. **Escalera** (5 cartas consecutivas)
-7. **Trío** (3 cartas del mismo valor)
-8. **Doble Par** (2 pares de cartas)
-9. **Par** (2 cartas del mismo valor)
-10. **Carta Alta** (ninguna de las anteriores)
+1. **🃏 Escalera Real** (A-K-Q-J-10 del mismo palo)
+2. **🌟 Escalera de Color** (5 cartas consecutivas del mismo palo)
+3. **🎯 Póker** (4 cartas del mismo valor)
+4. **🏠 Full House** (trío + par)
+5. **💎 Color** (5 cartas del mismo palo)
+6. **📈 Escalera** (5 cartas consecutivas)
+7. **🎲 Trío** (3 cartas del mismo valor)
+8. **👥 Doble Par** (2 pares de cartas)
+9. **📊 Par** (2 cartas del mismo valor)
+10. **🔼 Carta Alta** (ninguna de las anteriores)
 
-## 🎨 Personalización
+## 🎨 Características Visuales Premium
 
-### Temas Disponibles
-- **Clásico**: Verde tradicional de casino
-- **Nocturno**: Azul oscuro elegante
-- **Lujo**: Tono marrón premium
+### Diseño Oro y Negro
+- **Paleta de colores** exclusiva con tonos dorados y negros de lujo
+- **Cartas personalizadas** con fondos dorados para figuras y plateados para números
+- **Avatares circulares** con efectos de brillo y bordes dorados
+- **Mesa de juego** con patrones geométricos concéntricos
 
 ### Efectos Visuales
-- Partículas de confeti en victorias
-- Efectos de fichas al apostar
-- Brillos en cartas comunitarias
-- Animaciones de hover en botones
+- **Sistema de partículas** con efectos de oro, diamantes y brillos
+- **Animaciones de cartas** con sombras y reflejos
+- **Efectos de hover** en botones con degradados dorados
+- **Paneles transparentes** con efecto cristal
+- **Texto con brillo** dinámico en títulos importantes
 
-## 🏆 Sistema de Estadísticas
+## 🤖 Sistema de IA Mejorado
 
-El juego guarda automáticamente:
-- **Partidas totales** jugadas
-- **Partidas ganadas**
-- **Mejor mano** conseguida
-- **Mayor bote** ganado
-- **Fichas totales** acumuladas
-- **Fecha** de la última partida
+### Personalidades Detalladas
 
-## 🛠️ Estructura del Proyecto
+#### 🤝 Ana - Estrategia Agresiva
+- **Fuerza base**: +30% sobre cálculo normal
+- **Frecuencia de raises**: Alta
+- **Tolerancia al riesgo**: Elevada
+- **Ideal para**: Jugadores que buscan acción rápida
 
+#### 🛡️ Luis - Estrategia Conservadora  
+- **Fuerza base**: -30% sobre cálculo normal
+- **Frecuencia de folds**: Moderada-Alta
+- **Tolerancia al riesgo**: Baja
+- **Ideal para**: Partidas estratégicas y calculadas
+
+#### 🎭 Mia - Estrategia Impredecible
+- **Fuerza base**: Variable (50% - 150%)
+- **Comportamiento**: Aleatorio controlado
+- **Factor sorpresa**: Alto
+- **Ideal para**: Mantener la partida interesante
+
+### Toma de Decisiones
+```python
+# Algoritmo de decisión basado en:
+1. Fuerza de mano actual
+2. Cartas comunitarias visibles
+3. Comportamiento de otros jugadores
+4. Tamaño del bote
+5. Fichas restantes
+6. Personalidad asignada
 ```
-POKER/
-├── POKER.py                 # Archivo principal del juego
-├── estadisticas_poker.json  # Datos guardados (se crea automáticamente)
-├── requirements.txt         # Dependencias del proyecto
-└── README.md               # Este archivo
+
+## 💾 Sistema de Progreso
+
+### Estadísticas Guardadas
+- **📊 Partidas jugadas** totales
+- **🏆 Partidas ganadas** y ratio de victorias
+- **💰 Fichas acumuladas** en el perfil
+- **🕐 Fecha de registro** y última conexión
+- **📈 Progreso individual** por usuario
+
+### Archivos de Datos
 ```
+TEXAS-HOLD-EM/
+├── 📁 ASSETS/                 # Recursos gráficos
+├── 📄 POKER.py               # Juego principal
+├── 📊 usuarios_poker.json    # Base de datos de usuarios
+├── 📋 requirements.txt       # Dependencias
+└── 📖 README.md             # Documentación
+```
+
+## 🛠️ Estructura del Código
+
+### Arquitectura Principal
+```python
+PokerGame()                    # Clase principal del juego
+├── Jugador()                 # Sistema de jugadores
+├── Carta()                   # Sistema de cartas premium  
+├── EstadoJuego               # Máquina de estados
+└── SistemaParticulas()       # Efectos visuales
+
+SistemaLogin()                # Autenticación de usuarios
+├── cargar_usuarios()         # Gestión de base de datos
+├── registrar_usuario()       # Registro nuevo
+└── login_usuario()          # Autenticación
+```
+
+### Módulos Importantes
+- **🎨 Renderizado UI**: Interfaz premium con efectos
+- **🎯 Lógica de Juego**: Reglas y mecánicas del poker
+- **🤖 IA**: Comportamiento de jugadores artificiales
+- **💾 Persistencia**: Guardado y carga de datos
+- **✨ Efectos**: Sistema de partículas y animaciones
 
 ## 🐛 Solución de Problemas
 
-### Error común: "invalid color argument"
+### Errores Comunes y Soluciones
+
+#### ❌ "invalid color argument"
 ```python
-# Si aparece este error, asegurarse de usar:
-pygame.Surface((ancho, alto), pygame.SRCALPHA)
-# Para superficies con transparencia
+# Solución: Usar superficies con alpha correctamente
+brillo_surf = pygame.Surface((ancho, alto), pygame.SRCALPHA)
+color_correcto = (255, 255, 255, alpha)  # RGBA con alpha al final
 ```
 
-### Rendimiento en sistemas lentos
-- Reducir `FPS` en la línea 25 del código
-- Disminuir la cantidad de partículas en efectos
-- Usar el tema "Clásico" que requiere menos recursos
+#### ❌ "ModuleNotFoundError: No module named 'pygame'"
+```bash
+# Solución: Reinstalar Pygame
+pip uninstall pygame
+pip install pygame==2.5.2
+```
 
-## 📝 Personalización Avanzada
-
-### Modificar personalidades IA
-En la clase `Jugador`, ajustar los multiplicadores:
+#### ❌ El juego se cierra al hacer clic en "Jugar"
 ```python
+# Solución: Verificar que todos los jugadores estén inicializados
+# El código actual incluye protecciones contra este error
+```
+
+### Optimización de Rendimiento
+
+#### Para sistemas con recursos limitados:
+```python
+# En el código, reducir:
+FPS = 30  # En lugar de 60
+particulas = 20  # Reducir cantidad de efectos
+```
+
+#### Mejoras de rendimiento incluidas:
+- ✅ Lazy loading de recursos
+- ✅ Pool de partículas reutilizable
+- ✅ Verificación de nulidad en renderizado
+- ✅ Optimización de colisiones y detección
+
+## 🎨 Personalización Avanzada
+
+### Modificar Dificultad IA
+```python
+# En la clase Jugador, método tomar_decision_ia()
 if self.personalidad == "agresiva":
-    fuerza *= 1.2  # Aumentar para más agresividad
+    fuerza *= 1.3  # Aumentar para mayor dificultad
 ```
 
-### Añadir nuevos temas
-En el diccionario `TEMAS`, agregar nueva configuración:
+### Añadir Nuevos Efectos
 ```python
-"NuevoTema": {
-    "VERDE_MESA": (R, G, B),
-    "VERDE_OSCURO": (R, G, B),
-    # ... más colores
-}
+# En el sistema de partículas
+crear_particulas(x, y, cantidad=50, tipo="nuevo_efecto")
+```
+
+### Personalizar Apariencia
+```python
+# En el diccionario COLORES
+COLORES["MI_ORO"] = (255, 200, 0)  # Color personalizado
+```
+
+## 🔄 Flujo del Juego
+
+```
+LOGIN → MENÚ PRINCIPAL → PARTIDA
+     ├── NUEVA MANO → PRE-FLOP → FLOP → TURN → RIVER → SHOWDOWN
+     ├── ESTADÍSTICAS (Ver progreso)
+     └── SALIR (Guardado automático)
 ```
 
 ## 🤝 Contribuciones
 
-¡Las contribuciones son bienvenidas! Puedes:
+### 🎯 Áreas de Mejora Bienvenidas
+1. **🎵 Sistema de Sonido**: Efectos de audio y música ambiental
+2. **🌐 Multijugador Online**: Conexión en red para partidas remotas
+3. **📱 Interfaz Táctil**: Optimización para dispositivos táctiles
+4. **🎨 Más Temas**: Nuevos esquemas de color y diseños
+5. **🤖 IA Avanzada**: Algoritmos más complejos de toma de decisiones
 
-1. Reportar bugs o problemas
-2. Sugerir nuevas características
-3. Mejorar la inteligencia artificial
-4. Añadir nuevos temas visuales
-5. Optimizar el rendimiento
+### Proceso de Contribución
+1. 🍴 Hacer fork del proyecto
+2. 🌿 Crear una rama para la feature (`git checkout -b feature/AmazingFeature`)
+3. 💾 Hacer commit de los cambios (`git commit -m 'Add AmazingFeature'`)
+4. 📤 Push a la rama (`git push origin feature/AmazingFeature`)
+5. 🔄 Abrir un Pull Request
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver archivo `LICENSE` para más detalles.
+Este proyecto está bajo la **Licencia MIT** - ver el archivo [LICENSE](LICENSE) para más detalles.
+
+**Permisos incluyen**:
+- ✅ Uso comercial
+- ✅ Distribución
+- ✅ Modificación
+- ✅ Uso privado
 
 ## 👨‍💻 Desarrollo
-Por Alejandro Mendieta
 
-creado con ❤️ usando Python y Pygame. Incluye las mejores prácticas modernas de desarrollo de juegos y una arquitectura escalable para futuras mejoras.
+**Desarrollado por Alejandro Mendieta**
+
+Creado con ❤️ usando Python y Pygame. Este proyecto implementa las mejores prácticas modernas de desarrollo de juegos con una arquitectura escalable para futuras expansiones.
+
+### Características Técnicas Destacadas
+- **🏗️ Arquitectura modular** y fácil de mantener
+- **🎨 Sistema de renderizado** optimizado
+- **💾 Persistencia de datos** robusta
+- **🎯 IA configurable** y expansible
+- **📱 Interfaz responsive** y accesible
+
+---
+
+## 🚀 Próximas Características Planeadas
+
+### 🎮 Mejoras de Jugabilidad
+- [ ] **🏆 Sistema de torneos** con eliminatorias
+- [ ] **📊 Estadísticas avanzadas** y gráficos de progreso
+- [ ] **🎯 Modo desafío** con objetivos específicos
+- [ ] **👥 Más jugadores IA** con personalidades adicionales
+
+### 🌐 Funcionalidades Online
+- [ ] **🔗 Multijugador en red** para partidas online
+- [ ] **📱 Versión web** usando Pygame Web
+- [ ] **☁️ Sincronización en la nube** de progreso
+
+### 🎨 Mejoras Visuales
+- [ ] **🎞️ Animaciones 3D** para cartas y fichas
+- [ ] **🎨 Temas dinámicos** que cambian automáticamente
+- [ ] **✨ Más efectos de partículas** y transiciones
+
+### 🤖 IA Avanzada
+- [ ] **🧠 Machine Learning** para IA adaptativa
+- [ ] **📈 Análisis de estrategia** en tiempo real
+- [ ] **🎭 Personalidades dinámicas** que evolucionan
 
 ---
 
-## 🎯 Próximas Características
+**¿Listo para jugar?** 🎯 ¡Inicia el juego y experimenta el Texas Hold'em más premium en Python!
 
-- [ ] Modo torneo con eliminatorias
-- [ ] Más personalidades de IA
-- [ ] Efectos de sonido realistas
-- [ ] Modo multijugador en red
-- [ ] Sistema de logros y recompensas
-- [ ] Tutorial interactivo para principiantes
+```bash
+python POKER.py
+```
 
----
+**¡Que comiencen las apuestas!** ♠️♥️♦️♣️
