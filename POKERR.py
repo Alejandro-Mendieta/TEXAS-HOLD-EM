@@ -1,12 +1,12 @@
 """
-Texas Hold'em - Versión Premium Oro y Negro
-- Diseño de lujo con tema oro y negro
-- Mesa premium con efectos de brillo y reflejos
-- Cartas doradas y plateadas con detalles premium
-- Animaciones y partículas de oro
-- Efectos visuales de alta gama
+Texas Hold'em - Versión Premium Oro y Negro MEJORADA
+- Sistema de login/registro
+- Multijugador local mejorado
+- Corrección de bugs
+- Efectos visuales premium
+- Base de datos de usuarios
 
-Ejecutar: python texas_holdem_premium.py
+Ejecutar: python texas_holdem_premium_mejorado.py
 """
 
 import pygame
@@ -45,6 +45,75 @@ COLORES = {
     "VERDE_LUJO": (40, 140, 40),
     "TRANSPARENTE": (0, 0, 0, 0)
 }
+
+# Base de datos de usuarios
+USUARIOS_FILE = "usuarios_poker.json"
+
+def cargar_usuarios():
+    """Cargar usuarios desde archivo JSON"""
+    try:
+        if os.path.exists(USUARIOS_FILE):
+            with open(USUARIOS_FILE, 'r') as f:
+                return json.load(f)
+    except:
+        pass
+    return {}
+
+def guardar_usuarios(usuarios):
+    """Guardar usuarios en archivo JSON"""
+    try:
+        with open(USUARIOS_FILE, 'w') as f:
+            json.dump(usuarios, f, indent=2)
+        return True
+    except:
+        return False
+
+def registrar_usuario(nombre, password):
+    """Registrar nuevo usuario"""
+    usuarios = cargar_usuarios()
+    
+    if nombre in usuarios:
+        return False, "El usuario ya existe"
+    
+    usuarios[nombre] = {
+        "password": password,
+        "fichas": 5000,
+        "partidas_jugadas": 0,
+        "partidas_ganadas": 0,
+        "fecha_registro": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "ultima_conexion": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    if guardar_usuarios(usuarios):
+        return True, "Usuario registrado exitosamente"
+    else:
+        return False, "Error al guardar usuario"
+
+def login_usuario(nombre, password):
+    """Iniciar sesión de usuario"""
+    usuarios = cargar_usuarios()
+    
+    if nombre not in usuarios:
+        return False, "Usuario no encontrado"
+    
+    if usuarios[nombre]["password"] != password:
+        return False, "Contraseña incorrecta"
+    
+    # Actualizar última conexión
+    usuarios[nombre]["ultima_conexion"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    guardar_usuarios(usuarios)
+    
+    return True, "Login exitoso"
+
+def actualizar_estadisticas_usuario(nombre, ganador=False):
+    """Actualizar estadísticas del usuario"""
+    usuarios = cargar_usuarios()
+    
+    if nombre in usuarios:
+        usuarios[nombre]["partidas_jugadas"] += 1
+        if ganador:
+            usuarios[nombre]["partidas_ganadas"] += 1
+        guardar_usuarios(usuarios)
 
 # Fuentes premium
 def obtener_fuente(tamaño, bold=False, italic=False):
@@ -331,9 +400,10 @@ class Carta:
         surface.blit(carta_surf, (x, y))
 
 class Jugador:
-    def __init__(self, nombre, es_ia=False, fichas=2000, personalidad="normal"):
+    def __init__(self, nombre, es_ia=False, fichas=2000, personalidad="normal", es_usuario=False):
         self.nombre = nombre
         self.es_ia = es_ia
+        self.es_usuario = es_usuario
         self.fichas = fichas
         self.mano = []
         self.apuesta_actual = 0
@@ -350,7 +420,7 @@ class Jugador:
 
     def generar_color_premium(self):
         """Colores de avatar premium"""
-        if self.nombre == "Tú":
+        if self.es_usuario:
             return COLORES["ORO_PRINCIPAL"]
         elif "Ana" in self.nombre:
             return (180, 80, 120)  # Rosa oscuro premium
@@ -380,14 +450,23 @@ class Jugador:
     def puede_jugar(self):
         return self.en_juego and not self.ha_hecho_all_in and self.fichas > 0
 
-    # IA simplificada para evitar errores
+    # IA mejorada
     def tomar_decision_ia(self, apuesta_requerida, bote_actual, cartas_comunitarias, ronda, apuesta_minima, jugadores_en_vida):
         if not self.puede_jugar():
             return "fold", 0
             
-        # Decisión simple basada en probabilidades
-        fuerza = random.random()
+        # Calcular fuerza de mano simple
+        fuerza = self.calcular_fuerza_mano(cartas_comunitarias)
         
+        # Modificar fuerza según personalidad
+        if self.personalidad == "agresiva":
+            fuerza *= 1.3
+        elif self.personalidad == "conservadora":
+            fuerza *= 0.7
+        elif self.personalidad == "impredecible":
+            fuerza *= random.uniform(0.5, 1.5)
+        
+        # Tomar decisión basada en fuerza
         if fuerza < 0.3:
             self.ultima_accion = "fold"
             return "fold", 0
@@ -402,15 +481,42 @@ class Jugador:
             self.ultima_accion = "all in"
             return "raise", self.fichas
 
+    def calcular_fuerza_mano(self, cartas_comunitarias):
+        """Calcular fuerza aproximada de la mano"""
+        if len(cartas_comunitarias) == 0:
+            # Pre-flop: basado en valor de cartas
+            valores = sorted([c.valor for c in self.mano], reverse=True)
+            base = valores[0] / 14.0 * 0.6 + valores[1] / 14.0 * 0.4
+            
+            # Bonus por pareja o cartas altas
+            if valores[0] == valores[1]:
+                base += 0.3  # Par
+            elif valores[0] >= 12 or valores[1] >= 12:
+                base += 0.2  # Cartas altas
+                
+            return min(1.0, base)
+        else:
+            # Post-flop: evaluación más simple
+            return random.uniform(0.2, 0.9)
+
 # ---------- Clase Principal del Juego Premium ----------
 class PokerGame:
-    def __init__(self):
-        self.jugadores = [
-            Jugador("Tú", es_ia=False, fichas=3000),
-            Jugador("IA - Ana", es_ia=True, fichas=2500, personalidad="agresiva"),
-            Jugador("IA - Luis", es_ia=True, fichas=2500, personalidad="conservadora"),
-            Jugador("IA - Mia", es_ia=True, fichas=2500, personalidad="impredecible")
-        ]
+    def __init__(self, jugador_usuario=None):
+        if jugador_usuario:
+            self.jugadores = [
+                jugador_usuario,
+                Jugador("IA - Ana", es_ia=True, fichas=2500, personalidad="agresiva"),
+                Jugador("IA - Luis", es_ia=True, fichas=2500, personalidad="conservadora"),
+                Jugador("IA - Mia", es_ia=True, fichas=2500, personalidad="impredecible")
+            ]
+        else:
+            self.jugadores = [
+                Jugador("Tú", es_ia=False, fichas=3000, es_usuario=True),
+                Jugador("IA - Ana", es_ia=True, fichas=2500, personalidad="agresiva"),
+                Jugador("IA - Luis", es_ia=True, fichas=2500, personalidad="conservadora"),
+                Jugador("IA - Mia", es_ia=True, fichas=2500, personalidad="impredecible")
+            ]
+            
         self.mazo = []
         self.cartas_comunitarias = []
         self.bote = 0
@@ -500,33 +606,43 @@ class PokerGame:
                 
             self.dealer_index = jugadores_validos[0]
             sb_idx = jugadores_validos[1]
-            bb_idx = jugadores_validos[2 % len(jugadores_validos)]
+            bb_idx = jugadores_validos[2 % len(jugadores_validos)] if len(jugadores_validos) > 2 else jugadores_validos[0]
             
-            self.jugadores[sb_idx].hacer_apuesta(small)
-            self.jugadores[bb_idx].hacer_apuesta(big)
+            # Aplicar small blind y big blind
+            if sb_idx < len(self.jugadores):
+                self.jugadores[sb_idx].hacer_apuesta(small)
+            if bb_idx < len(self.jugadores):
+                self.jugadores[bb_idx].hacer_apuesta(big)
+                
             self.bote = small + big
             
-            self.jugador_actual_index = jugadores_validos[(bb_idx + 1) % len(jugadores_validos)]
+            # Encontrar siguiente jugador después del big blind
+            self.jugador_actual_index = self.encontrar_siguiente_jugador_index(bb_idx)
+            if self.jugador_actual_index is None:
+                self.jugador_actual_index = self.encontrar_siguiente_jugador_index(0)
             
             crear_particulas(WIDTH//2, HEIGHT//2, 40, "oro")
             return True
             
         except Exception as e:
             print(f"Error al iniciar nueva mano: {e}")
+            import traceback
+            traceback.print_exc()
             return False
 
     def encontrar_siguiente_jugador_index(self, desde):
         n = len(self.jugadores)
         for i in range(1, n+1):
             idx = (desde + i) % n
-            j = self.jugadores[idx]
-            if j.en_juego and (not j.ha_hecho_all_in) and j.fichas > 0:
-                return idx
+            if idx < len(self.jugadores):
+                j = self.jugadores[idx]
+                if j.en_juego and (not j.ha_hecho_all_in) and j.fichas > 0:
+                    return idx
         return None
 
     def verificar_fin_ronda(self):
-        jugadores_activos = [j for j in self.jugadores if j.en_juego]
-        if not jugadores_activos:
+        jugadores_activos = [j for j in self.jugadores if j.en_juego and j.fichas > 0]
+        if len(jugadores_activos) <= 1:
             self.ronda_terminada = True
             return
             
@@ -569,14 +685,31 @@ class PokerGame:
             self.ganador.fichas += self.bote
             crear_particulas(WIDTH//2, HEIGHT//2, 150, "oro")
             crear_particulas(WIDTH//2, HEIGHT//2, 50, "diamante")
+            
+            # Actualizar estadísticas si es usuario
+            if hasattr(self.ganador, 'es_usuario') and self.ganador.es_usuario:
+                usuarios = cargar_usuarios()
+                if self.ganador.nombre in usuarios:
+                    usuarios[self.ganador.nombre]["fichas"] = self.ganador.fichas
+                    guardar_usuarios(usuarios)
+            
             self.bote = 0
             return
             
         # Para simplificar, el ganador es el primer jugador activo
-        self.ganador = jugadores_activos[0]
-        self.ganador.fichas += self.bote
-        crear_particulas(WIDTH//2, HEIGHT//2, 200, "oro")
-        crear_particulas(WIDTH//2, HEIGHT//2, 80, "diamante")
+        if jugadores_activos:
+            self.ganador = jugadores_activos[0]
+            self.ganador.fichas += self.bote
+            crear_particulas(WIDTH//2, HEIGHT//2, 200, "oro")
+            crear_particulas(WIDTH//2, HEIGHT//2, 80, "diamante")
+            
+            # Actualizar estadísticas si es usuario
+            if hasattr(self.ganador, 'es_usuario') and self.ganador.es_usuario:
+                usuarios = cargar_usuarios()
+                if self.ganador.nombre in usuarios:
+                    usuarios[self.ganador.nombre]["fichas"] = self.ganador.fichas
+                    guardar_usuarios(usuarios)
+        
         self.bote = 0
 
 # ---------- Renderizado UI Premium ----------
@@ -591,7 +724,8 @@ def dibujar_mesa_premium(surface, juego):
         pygame.draw.line(surface, color, (0, y), (WIDTH, y))
     
     # Efecto de brillo pulsante en la mesa
-    juego.efecto_brillo_mesa = (juego.efecto_brillo_mesa + 0.02) % (2 * math.pi)
+    if juego and juego.juego_activo:
+        juego.efecto_brillo_mesa = (juego.efecto_brillo_mesa + 0.02) % (2 * math.pi)
     
     # Mesa ovalada premium
     tabla_ancho = int(WIDTH * 0.88)
@@ -644,6 +778,9 @@ def dibujar_mesa_premium(surface, juego):
     surface.blit(logo_subtexto, (WIDTH//2 - logo_subtexto.get_width()//2, HEIGHT//2 + 40))
 
 def dibujar_jugadores_premium(surface, juego):
+    if not juego or not juego.jugadores:
+        return
+        
     posiciones = [
         (WIDTH//2, int(HEIGHT*0.78)),      # bottom - player
         (int(WIDTH*0.84), int(HEIGHT*0.48)), # right
@@ -672,8 +809,9 @@ def dibujar_jugadores_premium(surface, juego):
         if i == juego.jugador_actual_index and juego.juego_activo:
             for r in range(avatar_radio + 2, avatar_radio + 10, 2):
                 brillo_surf = pygame.Surface((r*2, r*2), pygame.SRCALPHA)
-                alpha = 100 - (r - avatar_radio) * 15
-                pygame.draw.circle(brillo_surf, (255, 255, 255, alpha), (r, r), r, 2)
+                alpha = max(0, 100 - (r - avatar_radio) * 15)  # Asegurar que alpha no sea negativo
+                color_brillo = (255, 255, 255, alpha)  # Color RGBA correcto
+                pygame.draw.circle(brillo_surf, color_brillo, (r, r), r, 2)
                 surface.blit(brillo_surf, (x - r, y - r))
         
         # Borde dorado del avatar
@@ -748,6 +886,9 @@ def dibujar_jugadores_premium(surface, juego):
                                      accion_rect.centery - accion_text.get_height()//2))
 
 def dibujar_comunitarias_premium(surface, juego):
+    if not juego:
+        return
+        
     x0 = WIDTH//2 - 240
     y0 = HEIGHT//2 - 70
     
@@ -791,7 +932,7 @@ def dibujar_comunitarias_premium(surface, juego):
     surface.blit(estado_text, (WIDTH//2 - estado_text.get_width()//2, 30))
 
 def dibujar_controles_premium(surface, juego):
-    if not juego.juego_activo or juego.jugador_actual_index >= len(juego.jugadores):
+    if not juego or not juego.juego_activo or juego.jugador_actual_index >= len(juego.jugadores):
         return None, None, None, None
         
     jugador = juego.jugadores[juego.jugador_actual_index]
@@ -841,7 +982,7 @@ def dibujar_controles_premium(surface, juego):
     
     return fold_r, call_r, raise_r, allin_r
 
-def dibujar_menu_principal_premium(surface):
+def dibujar_menu_principal_premium(surface, usuario_actual=None):
     # Fondo con textura de terciopelo negro
     for y in range(HEIGHT):
         base_color = COLORES["NEGRO_LUJO"]
@@ -855,12 +996,29 @@ def dibujar_menu_principal_premium(surface):
     # Título principal
     titulo_texto = "TEXAS HOLD'EM"
     titulo_surf = fuente_muy_grande.render(titulo_texto, True, COLORES["ORO_CLARO"])
-    titulo_rect = titulo_surf.get_rect(center=(WIDTH//2, 150))
+    titulo_rect = titulo_surf.get_rect(center=(WIDTH//2, 120))
     surface.blit(titulo_surf, titulo_rect)
     
     # Subtítulo
     subtitulo = fuente_titulo.render("EDICIÓN PREMIUM ORO", True, COLORES["ORO_SECUNDARIO"])
-    surface.blit(subtitulo, (WIDTH//2 - subtitulo.get_width()//2, 230))
+    surface.blit(subtitulo, (WIDTH//2 - subtitulo.get_width()//2, 200))
+    
+    # Información del usuario si está logueado
+    if usuario_actual:
+        usuario_panel = pygame.Rect(WIDTH//2 - 200, 250, 400, 80)
+        usuario_surf = pygame.Surface((400, 80), pygame.SRCALPHA)
+        pygame.draw.rect(usuario_surf, (30, 30, 30, 200), usuario_surf.get_rect(), border_radius=15)
+        pygame.draw.rect(usuario_surf, COLORES["ORO_PRINCIPAL"], usuario_surf.get_rect(), 3, border_radius=15)
+        surface.blit(usuario_surf, usuario_panel)
+        
+        usuario_text = fuente_media.render(f"Bienvenido, {usuario_actual}", True, COLORES["ORO_CLARO"])
+        surface.blit(usuario_text, (WIDTH//2 - usuario_text.get_width()//2, 270))
+        
+        usuarios = cargar_usuarios()
+        if usuario_actual in usuarios:
+            fichas = usuarios[usuario_actual]["fichas"]
+            fichas_text = fuente_pequena.render(f"Fichas: ${fichas:,}", True, COLORES["PLATA"])
+            surface.blit(fichas_text, (WIDTH//2 - fichas_text.get_width()//2, 300))
     
     # Botón jugar premium
     boton_jugar = pygame.Rect(WIDTH//2 - 150, 350, 300, 80)
@@ -869,44 +1027,123 @@ def dibujar_menu_principal_premium(surface):
     
     dibujar_boton_premium(surface, boton_jugar, "JUGAR", hover_jugar)
     
+    # Botón cerrar sesión si hay usuario
+    if usuario_actual:
+        boton_logout = pygame.Rect(WIDTH//2 - 150, 450, 300, 60)
+        hover_logout = boton_logout.collidepoint(mouse_pos)
+        dibujar_boton_premium(surface, boton_logout, "CERRAR SESIÓN", hover_logout)
+    else:
+        boton_logout = None
+    
     # Panel de bienvenida
-    panel_wel = pygame.Rect(WIDTH//2 - 250, 450, 500, 200)
-    panel_surf = pygame.Surface((500, 200), pygame.SRCALPHA)
+    panel_wel = pygame.Rect(WIDTH//2 - 250, 520, 500, 150)
+    panel_surf = pygame.Surface((500, 150), pygame.SRCALPHA)
     pygame.draw.rect(panel_surf, (20, 20, 20, 200), panel_surf.get_rect(), border_radius=15)
     pygame.draw.rect(panel_surf, COLORES["ORO_PRINCIPAL"], panel_surf.get_rect(), 3, border_radius=15)
     surface.blit(panel_surf, panel_wel)
     
     # Texto de bienvenida
     bienvenida = fuente_media.render("Bienvenido al Casino Premium", True, COLORES["ORO_CLARO"])
-    surface.blit(bienvenida, (panel_wel.centerx - bienvenida.get_width()//2, panel_wel.y + 20))
+    surface.blit(bienvenida, (panel_wel.centerx - bienvenida.get_width()//2, panel_wel.y + 15))
     
     instrucciones = [
-        "• Estrategia y suerte se unen en la mesa premium",
+        "• Sistema multijugador local mejorado",
         "• Cartas doradas y plateadas exclusivas",
         "• Diseño de lujo en oro y negro",
         "• IA avanzada con personalidades únicas",
-        "• Efectos visuales y animaciones premium"
+        "• Sistema de login y estadísticas"
     ]
     
     for i, linea in enumerate(instrucciones):
         texto = fuente_pequena.render(linea, True, COLORES["PLATA"])
-        surface.blit(texto, (panel_wel.x + 30, panel_wel.y + 60 + i * 25))
+        surface.blit(texto, (panel_wel.x + 30, panel_wel.y + 45 + i * 22))
     
     # Footer
     footer = fuente_pequena.render("© 2024 Casino Premium - Todos los derechos reservados", 
                                  True, COLORES["PLATA_OSCURO"])
     surface.blit(footer, (WIDTH//2 - footer.get_width()//2, HEIGHT - 40))
     
-    return boton_jugar
+    return boton_jugar, boton_logout
+
+def dibujar_login_premium(surface):
+    # Fondo con textura de terciopelo negro
+    for y in range(HEIGHT):
+        base_color = COLORES["NEGRO_LUJO"]
+        color = (
+            max(0, min(255, base_color[0])),
+            max(0, min(255, base_color[1])),
+            max(0, min(255, base_color[2]))
+        )
+        pygame.draw.line(surface, color, (0, y), (WIDTH, y))
+    
+    # Título principal
+    titulo_texto = "CASINO PREMIUM"
+    titulo_surf = fuente_titulo.render(titulo_texto, True, COLORES["ORO_CLARO"])
+    titulo_rect = titulo_surf.get_rect(center=(WIDTH//2, 120))
+    surface.blit(titulo_surf, titulo_rect)
+    
+    # Panel de login
+    panel_login = pygame.Rect(WIDTH//2 - 200, 200, 400, 400)
+    panel_surf = pygame.Surface((400, 400), pygame.SRCALPHA)
+    pygame.draw.rect(panel_surf, (20, 20, 20, 230), panel_surf.get_rect(), border_radius=20)
+    pygame.draw.rect(panel_surf, COLORES["ORO_PRINCIPAL"], panel_surf.get_rect(), 4, border_radius=20)
+    surface.blit(panel_surf, panel_login)
+    
+    # Título del panel
+    login_titulo = fuente_grande.render("INICIAR SESIÓN", True, COLORES["ORO_CLARO"])
+    surface.blit(login_titulo, (WIDTH//2 - login_titulo.get_width()//2, 230))
+    
+    # Campos de entrada
+    usuario_rect = pygame.Rect(WIDTH//2 - 150, 300, 300, 50)
+    password_rect = pygame.Rect(WIDTH//2 - 150, 380, 300, 50)
+    
+    # Botones
+    login_btn = pygame.Rect(WIDTH//2 - 140, 460, 130, 50)
+    registrar_btn = pygame.Rect(WIDTH//2 + 10, 460, 130, 50)
+    
+    mouse_pos = pygame.mouse.get_pos()
+    
+    # Dibujar campos
+    pygame.draw.rect(surface, (40, 40, 40), usuario_rect, border_radius=8)
+    pygame.draw.rect(surface, COLORES["ORO_SECUNDARIO"], usuario_rect, 2, border_radius=8)
+    
+    pygame.draw.rect(surface, (40, 40, 40), password_rect, border_radius=8)
+    pygame.draw.rect(surface, COLORES["ORO_SECUNDARIO"], password_rect, 2, border_radius=8)
+    
+    # Etiquetas
+    usuario_label = fuente_media.render("Usuario:", True, COLORES["PLATA"])
+    surface.blit(usuario_label, (usuario_rect.x, usuario_rect.y - 30))
+    
+    password_label = fuente_media.render("Contraseña:", True, COLORES["PLATA"])
+    surface.blit(password_label, (password_rect.x, password_rect.y - 30))
+    
+    # Botones
+    dibujar_boton_premium(surface, login_btn, "ENTRAR", login_btn.collidepoint(mouse_pos))
+    dibujar_boton_premium(surface, registrar_btn, "REGISTRAR", registrar_btn.collidepoint(mouse_pos))
+    
+    # Footer
+    footer = fuente_pequena.render("© 2024 Casino Premium - Sistema de Autenticación", 
+                                 True, COLORES["PLATA_OSCURO"])
+    surface.blit(footer, (WIDTH//2 - footer.get_width()//2, HEIGHT - 40))
+    
+    return usuario_rect, password_rect, login_btn, registrar_btn
 
 # ---------- Loop Principal Premium ----------
 def main():
     global particulas
     
-    juego = PokerGame()
+    estado_aplicacion = "login"
+    usuario_actual = None
+    juego = None
     running = True
     click_cooldown = 0
-    estado_aplicacion = "menu"
+    
+    # Campos de texto para login
+    usuario_texto = ""
+    password_texto = ""
+    campo_activo = "usuario"
+    mensaje_login = ""
+    mensaje_tiempo = 0
     
     # Efectos de partículas iniciales
     for _ in range(100):
@@ -916,6 +1153,11 @@ def main():
         dt = clock.tick(FPS)
         if click_cooldown > 0:
             click_cooldown -= 1
+            
+        if mensaje_tiempo > 0:
+            mensaje_tiempo -= 1
+        else:
+            mensaje_login = ""
         
         # Actualizar partículas
         particulas = [p for p in particulas if p.update()]
@@ -928,24 +1170,105 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     if estado_aplicacion == "jugando":
                         estado_aplicacion = "menu"
-                        juego.juego_activo = False
+                        if juego:
+                            juego.juego_activo = False
                     elif estado_aplicacion == "menu":
+                        estado_aplicacion = "login"
+                        usuario_actual = None
+                    elif estado_aplicacion == "login":
                         running = False
+                
+                # Manejo de entrada de texto en login
+                if estado_aplicacion == "login":
+                    if event.key == pygame.K_TAB:
+                        campo_activo = "password" if campo_activo == "usuario" else "usuario"
+                    elif event.key == pygame.K_RETURN:
+                        # Intentar login automáticamente
+                        success, msg = login_usuario(usuario_texto, password_texto)
+                        if success:
+                            usuario_actual = usuario_texto
+                            estado_aplicacion = "menu"
+                            mensaje_login = ""
+                            crear_particulas(WIDTH//2, HEIGHT//2, 100, "oro")
+                        else:
+                            mensaje_login = msg
+                            mensaje_tiempo = 180
+                    elif event.key == pygame.K_BACKSPACE:
+                        if campo_activo == "usuario":
+                            usuario_texto = usuario_texto[:-1]
+                        else:
+                            password_texto = password_texto[:-1]
+                    else:
+                        if len(event.unicode) > 0 and ord(event.unicode) >= 32:
+                            if campo_activo == "usuario":
+                                if len(usuario_texto) < 15:
+                                    usuario_texto += event.unicode
+                            else:
+                                if len(password_texto) < 20:
+                                    password_texto += event.unicode
             
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and click_cooldown == 0:
                 mouse = pygame.mouse.get_pos()
                 
-                if estado_aplicacion == "menu":
-                    boton_jugar = dibujar_menu_principal_premium(screen)
-                    if boton_jugar.collidepoint(mouse):
-                        estado_aplicacion = "jugando"
+                if estado_aplicacion == "login":
+                    usuario_rect, password_rect, login_btn, registrar_btn = dibujar_login_premium(screen)
+                    
+                    if usuario_rect.collidepoint(mouse):
+                        campo_activo = "usuario"
+                    elif password_rect.collidepoint(mouse):
+                        campo_activo = "password"
+                    elif login_btn.collidepoint(mouse):
+                        success, msg = login_usuario(usuario_texto, password_texto)
+                        if success:
+                            usuario_actual = usuario_texto
+                            estado_aplicacion = "menu"
+                            mensaje_login = ""
+                            crear_particulas(mouse[0], mouse[1], 100, "oro")
+                        else:
+                            mensaje_login = msg
+                            mensaje_tiempo = 180
+                    elif registrar_btn.collidepoint(mouse):
+                        success, msg = registrar_usuario(usuario_texto, password_texto)
+                        if success:
+                            mensaje_login = msg
+                            mensaje_tiempo = 180
+                            usuario_texto = ""
+                            password_texto = ""
+                            crear_particulas(mouse[0], mouse[1], 80, "oro")
+                        else:
+                            mensaje_login = msg
+                            mensaje_tiempo = 180
+                
+                elif estado_aplicacion == "menu":
+                    boton_jugar, boton_logout = dibujar_menu_principal_premium(screen, usuario_actual)
+                    
+                    if boton_jugar and boton_jugar.collidepoint(mouse):
+                        # Crear jugador usuario
+                        if usuario_actual:
+                            usuarios = cargar_usuarios()
+                            fichas_iniciales = usuarios[usuario_actual]["fichas"] if usuario_actual in usuarios else 3000
+                            jugador_usuario = Jugador(usuario_actual, es_ia=False, fichas=fichas_iniciales, es_usuario=True)
+                            juego = PokerGame(jugador_usuario)
+                        else:
+                            juego = PokerGame()
+                            
                         if juego.iniciar_nueva_mano():
+                            estado_aplicacion = "jugando"
                             click_cooldown = 20
                             crear_particulas(mouse[0], mouse[1], 50, "oro")
                         else:
-                            estado_aplicacion = "menu"
+                            # Si no se pudo iniciar la mano, mostrar mensaje de error
+                            mensaje_login = "Error al iniciar la partida"
+                            mensaje_tiempo = 120
+                    
+                    if boton_logout and boton_logout.collidepoint(mouse):
+                        usuario_actual = None
+                        estado_aplicacion = "login"
+                        usuario_texto = ""
+                        password_texto = ""
+                        click_cooldown = 10
                 
-                elif estado_aplicacion == "jugando" and juego.juego_activo:
+                elif estado_aplicacion == "jugando" and juego and juego.juego_activo:
                     fold_r, call_r, raise_r, allin_r = dibujar_controles_premium(screen, juego)
                     
                     if fold_r and fold_r.collidepoint(mouse):
@@ -985,7 +1308,7 @@ def main():
                         click_cooldown = 10
                         crear_particulas(mouse[0], mouse[1], 60, "oro")
                 
-                if estado_aplicacion == "jugando" and juego.estado == EstadoJuego.FINAL:
+                if estado_aplicacion == "jugando" and juego and juego.estado == EstadoJuego.FINAL:
                     btn_nueva = pygame.Rect(WIDTH//2-140, HEIGHT//2+80, 280, 60)
                     if btn_nueva.collidepoint(mouse):
                         if juego.iniciar_nueva_mano():
@@ -993,7 +1316,7 @@ def main():
                             crear_particulas(mouse[0], mouse[1], 40, "oro")
         
         # Lógica del juego
-        if estado_aplicacion == "jugando" and juego.juego_activo:
+        if estado_aplicacion == "jugando" and juego and juego.juego_activo:
             # Decisiones de IA
             if (juego.jugador_actual_index < len(juego.jugadores) and
                 juego.jugadores[juego.jugador_actual_index].es_ia and 
@@ -1032,9 +1355,33 @@ def main():
         # Renderizado
         screen.fill(COLORES["NEGRO_LUJO"])
         
-        if estado_aplicacion == "menu":
-            dibujar_menu_principal_premium(screen)
-        elif estado_aplicacion == "jugando":
+        if estado_aplicacion == "login":
+            usuario_rect, password_rect, login_btn, registrar_btn = dibujar_login_premium(screen)
+            
+            # Dibujar texto de los campos
+            usuario_surf = fuente_media.render(usuario_texto, True, COLORES["BLANCO_PREMIUM"])
+            screen.blit(usuario_surf, (usuario_rect.x + 10, usuario_rect.y + 10))
+            
+            # Mostrar contraseña con asteriscos
+            password_display = "*" * len(password_texto)
+            password_surf = fuente_media.render(password_display, True, COLORES["BLANCO_PREMIUM"])
+            screen.blit(password_surf, (password_rect.x + 10, password_rect.y + 10))
+            
+            # Indicador de campo activo
+            if campo_activo == "usuario":
+                pygame.draw.rect(screen, COLORES["ORO_CLARO"], usuario_rect, 3, border_radius=8)
+            else:
+                pygame.draw.rect(screen, COLORES["ORO_CLARO"], password_rect, 3, border_radius=8)
+            
+            # Mostrar mensaje de login
+            if mensaje_login:
+                mensaje_surf = fuente_pequena.render(mensaje_login, True, COLORES["ROJO_LUJO"])
+                screen.blit(mensaje_surf, (WIDTH//2 - mensaje_surf.get_width()//2, 530))
+                
+        elif estado_aplicacion == "menu":
+            dibujar_menu_principal_premium(screen, usuario_actual)
+            
+        elif estado_aplicacion == "jugando" and juego:
             dibujar_mesa_premium(screen, juego)
             dibujar_comunitarias_premium(screen, juego)
             dibujar_jugadores_premium(screen, juego)
@@ -1055,6 +1402,10 @@ def main():
                 
                 premio_texto = fuente_media.render(f"Premio: ${juego.bote:,}", True, COLORES["ORO_SECUNDARIO"])
                 screen.blit(premio_texto, (WIDTH//2 - premio_texto.get_width()//2, HEIGHT//2 - 60))
+                
+                # Actualizar estadísticas si el ganador es usuario
+                if juego.ganador.es_usuario:
+                    actualizar_estadisticas_usuario(juego.ganador.nombre, ganador=True)
             
             if juego.estado == EstadoJuego.FINAL:
                 btn_nueva = pygame.Rect(WIDTH//2-140, HEIGHT//2+80, 280, 60)
